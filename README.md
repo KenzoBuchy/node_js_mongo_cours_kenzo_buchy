@@ -20,12 +20,18 @@ Un projet Node.js simple.
    ```sh
    npm install
    ```
+4. Créer un .env et ajouter : 
+   ```sh
+   MONGO_URI=lien_vers_votre_mongo_db
+   ```
 
 ## Utilisation
-Lancer le projet en mode développement :
+1. Lancer le projet en mode développement :
 ```sh
 npm start
 ```
+
+2. Pour avoir la documentation swagger : localhost:3000/api-docs
 
 ## Scripts disponibles
 - `npm start` : Démarre l'application
