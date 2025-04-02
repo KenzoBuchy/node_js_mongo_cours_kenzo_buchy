@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /potions/{id}:
+ * /potions/potion/{id}:
  *   get:
  *     summary: Récupérer une potion par son ID
  *     description: Retourne les détails d'une potion spécifique en fonction de son identifiant unique.
@@ -76,7 +76,7 @@ router.get('/', async (req, res) => {
  *       400:
  *         description: Erreur lors de la récupération de la potion.
  */
-router.get('/potions/:id', async (req, res) => {
+router.get('/potion/:id', async (req, res) => {
     try {
         const potion = await Potion.findById(req.params.id);
         if (!potion) return res.status(404).json({ error: 'Potion non trouvée' });
@@ -85,6 +85,86 @@ router.get('/potions/:id', async (req, res) => {
         res.status(400).json({ error: err.message });
     }
 });
+
+/**
+ * @swagger
+ * /potions/potion/{id}:
+ *   delete:
+ *     summary: Supprimer une potion par ID
+ *     description: Supprime une potion spécifique de la base de données en fonction de son ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identifiant unique de la potion.
+ *     responses:
+ *       200:
+ *         description: Succès - Potion supprimée.
+ *       404:
+ *         description: Potion non trouvée.
+ *       500:
+ *         description: Erreur serveur.
+ */
+router.delete('/potion/:id', async (req, res) => {
+    try {
+        const deletedPotion = await Potion.findByIdAndDelete(req.params.id);
+        if (!deletedPotion) {
+            return res.status(404).json({ message: "Potion non trouvée" });
+        }
+        res.status(200).json({ message: "Potion supprimée avec succès" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/**
+ * @swagger
+ * /potions/potion/{id}:
+ *   put:
+ *     summary: Mettre à jour une potion par ID
+ *     description: Met à jour les informations d'une potion existante.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Identifiant unique de la potion.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nouveau nom de la potion.
+ *               effect:
+ *                 type: string
+ *                 description: Nouvel effet de la potion.
+ *     responses:
+ *       200:
+ *         description: Succès - Potion mise à jour.
+ *       404:
+ *         description: Potion non trouvée.
+ *       500:
+ *         description: Erreur serveur.
+ */
+router.put('/potion/:id', async (req, res) => {
+    try {
+        const updatedPotion = await Potion.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedPotion) {
+            return res.status(404).json({ message: "Potion non trouvée" });
+        }
+        res.status(200).json(updatedPotion);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 
 /**
@@ -450,6 +530,7 @@ router.get('/analytics/search', async (req, res) => {
         // Vérification des paramètres
         const validGroups = ['vendor_id', 'categories'];
         const validMetrics = ['avg', 'sum', 'count'];
+        
         const validChamps = ['score', 'price'];
 
         if (!validGroups.includes(group) || !validMetrics.includes(metric) || !validChamps.includes(champ)) {
